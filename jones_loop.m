@@ -150,9 +150,9 @@ for A1=A1_range
                 if ~isempty(section)
                     section_found=section;             
                     isFind=1;
-                    results_find(count_i,:)=[A1,orient,A2,isFind,section_found];
+                    results_find(count_i,:)=[A1,orient,A2,isFind,range(section_found(1)),range(section_found(2)),section_found(3:5)];
                     fprintf('\tWE FOUND IT!!!!!!!!!!!!!!!!!!!!!!\r');
-                    fprintf('\tX1=%d, X2=%d, ang_gof=%.4f, amp_p1=%.4f, amp_gof=%.4f\r',section_found(1),section_found(2),section_found(3),section_found(4),section_found(5));
+                    fprintf('\tV1=%.2f, V2=%.2f, ang_gof=%.4f, amp_p1=%.4f, amp_gof=%.4f\r',range(section_found(1)),range(section_found(2)),section_found(3),section_found(4),section_found(5));
                 else        
                     isFind=0;
                     results_find(count_i,:)=[A1,orient,A2,isFind,[0,0,0,0,0]];
@@ -173,9 +173,10 @@ for A1=A1_range
                 
                 figure(3)
                 plot(range,amplitude,'LineWidth',3);
+                ylim([0 1]);
                 title('Amp');
-                pause
-                ;
+%                 pause
+%                 ;
             end
             clear section;
             % about 60s with no plot display
