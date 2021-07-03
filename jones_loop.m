@@ -17,20 +17,21 @@ Timestamp=datestr(now,'yyyy-mm-dd_HH-MM-SS');
 
 Amax=11.75*pi/180; %Angle amplitude (max tilt)
 B=3*pi/180; % cubic factor in tilt vs voltage -
-Ret_ini=0.856; %Initial retardance in waves
+Ret_ini=0.856337; %Initial retardance in waves
 % Ret_red=0.25; %Fractional reduction in retardance
 
 
 count_i=0; % a handy counter for indexing vectors as the model runs....
-range=-1:0.01:1;
+range=-1:0.002:1;
 device_orient=(0:0.5:180)*pi/180;%+pi/4; % orientation of device 0-180
 phase_diff=pi();
 
 
 % set orientations and retardances of waveplates
-A1_range=-pi()/2:pi()/20:pi()/2; % +- pi/2
-A2_range=-pi()/2:pi()/20:pi()/2;% +- pi/2
+A1_range=-pi()/2:pi()/180:pi()/2; % +- pi/2
+A2_range=-pi()/2:pi()/180:pi()/2;% +- pi/2
 Ret_red_range=0.16:0.01:0.28; %Fractional reduction in retardance
+% Ret_red_range=0.20;
 tic
 for Ret_red=Ret_red_range
     for A1=A1_range
@@ -65,7 +66,7 @@ for Ret_red=Ret_red_range
                 isFind=0;
                 count_i=count_i+1;
                 clc
-                fprintf('%d/%d\t%.3f%%\t%.0fs\n',count_i,size(device_orient,2)*size(A1_range,2)*size(A2_range,2),count_i*100/(size(device_orient,2)*size(A1_range,2)*size(A2_range,2)),toc);
+                fprintf('%d/%d\t%.3f%%\t%.0fs\n',count_i,size(device_orient,2)*size(A1_range,2)*size(A2_range,2)*size(Ret_red_range,2),count_i*100/(size(device_orient,2)*size(A1_range,2)*size(A2_range,2)*size(Ret_red_range,2)),toc);
                 count_j=0;
                 for V=range% normalise volts
                     % range=V;% "range" is normalised to go from -1 to 1 as loop runs
@@ -74,7 +75,8 @@ for Ret_red=Ret_red_range
                     A=V*(Amax+B)-B*V^3+orient; % LC ULH tilt offset by orient angle
                     % M_A=-1*A; % mirror angle of optic axis
                     % THIS LINE TO BE CHANGED!
-                    RET=Ret_ini*(1-Ret_red*((A-orient)/Amax)^2); % retardance scale factor with tilt as loop runs
+                    % RET=Ret_ini*(1-Ret_red*((A-orient)/Amax)^2); % retardance scale factor with tilt as loop runs
+                    RET=Ret_ini*(1-Ret_red*((V)^2));
                     
                     % calc Jones matrix for LC layer(s) for positive and mirrored angles
                     % angles are "A" and "M_A", matrices are called: WP and M_WP
@@ -94,7 +96,7 @@ for Ret_red=Ret_red_range
                     % note: in stuff below use Eout(1) for x-polarisation and Eout(2) for y-polarisation
                     tilt(count_j)=A; % load optic axis angle "A" into array called "tilt"
                     ret(count_j)=RET; % load retardance scale factor into array called "ret"
-                    ang(count_j)=unwrap(angle(Eout(1)),pi*90/180); %phase angle of Eout_x into "angle" array
+                    ang(count_j)=unwrap(angle(Eout(1))); %phase angle of Eout_x into "angle" array
                     %load intensities and amplitudes of Eout_x into arra);ys
                     intensity(count_j)=abs(Eout(1)).^2;
                     amplitude(count_j)=abs(Eout(1));

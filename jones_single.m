@@ -13,18 +13,20 @@ clc
 clear
 close all
 
-Amax=5.8*pi/180; %Angle amplitude (max tilt)
-B=2*pi/180; % cubic factor in tilt vs voltage -
-Ret_ini=0.856; %Initial retardance in waves
-Ret_red=0.25; %Fractional reduction in retardance
+Amax=11.75*pi/180; %Angle amplitude (max tilt)
+B=3*pi/180; % cubic factor in tilt vs voltage -
+Ret_ini=0.856337; %Initial retardance in waves
+Ret_red=0.28; %Fractional reduction in retardance
 
-orient=-45*pi/180;%+pi/4; % orientation of device 0-180 
+orient=78.5*pi/180;%+pi/4; % orientation of device 0-180 
 
 % set orientations and retardances of waveplates
-A1=pi/4; % +- pi/2
+% A1=pi/4; % +- pi/2
+A1=-18*pi/180;
 phi1=pi/2;
 
-A2=-pi/4;% +- pi/2
+% A2=-pi/4;% +- pi/2
+A2=63*pi/180;
 phi2=pi/2;
 
 % set up Jones matrix for first wave plate at angle A1: WP1
@@ -58,7 +60,8 @@ for V=range% normalise volts
     A=V*(Amax+B)-B*V^3+orient; % LC ULH tilt offset by orient angle
     % M_A=-1*A; % mirror angle of optic axis
     % THIS LINE TO BE CHANGED!
-    RET=Ret_ini*(1-Ret_red*((A-orient)/Amax)^2); % retardance scale factor with tilt as loop runs 
+%     RET=Ret_ini*(1-Ret_red*((A-orient)/Amax)^2); % retardance scale factor with tilt as loop runs 
+    RET=Ret_ini*(1-Ret_red*((V)^2));
     
     % calc Jones matrix for LC layer(s) for positive and mirrored angles
     % angles are "A" and "M_A", matrices are called: WP and M_WP
@@ -102,6 +105,7 @@ title('Phase');
 figure
 plot(range,amplitude,'LineWidth',3);
 title('Amp');
+ylim([0,1]);
 
 toc
 
