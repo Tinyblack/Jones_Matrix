@@ -189,7 +189,7 @@ for Ret_red=Ret_red_range
 end
 toc
 % save(['results_' Timestamp '.mat'],'results_find');
-true_finding=results_find(results_find(:,4)==1,:);
+true_finding=results_find(results_find(:,5)==1,:);
 true_finding(:,1:3)=true_finding(:,1:3)*180/pi;
 Output=array2table(true_finding);
 Output.Properties.VariableNames{1} = 'WP1';
@@ -203,5 +203,6 @@ Output.Properties.VariableNames{8} = 'Angle_gof';
 Output.Properties.VariableNames{9} = 'Amp_K';
 Output.Properties.VariableNames{10} = 'Amp_gof';
 Output.Properties.VariableNames{11} = 'Amp_mean';
-save(['Results_' Timestamp '.mat'],'Output');
+save(['Results_FIND_' Timestamp '.mat'],'Output');
+save(['Results_ALL_' Timestamp '.mat'],'results_find');
 
