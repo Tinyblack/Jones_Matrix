@@ -143,16 +143,23 @@ for Ret_red=Ret_red_range
                     %%% check if the ang sections are linear (using linear fit, may not accurate) %%%
                     for k=1:1:size(section,1)
                         section(k,6)=mean(amplitude(section(k,1):section(k,2)));
-                        if section(k,6)<0.9
+                        if section(k,6)<0.85
                             isFind=0;
                             results_find(count_i,:)=[A1,orient,A2,Ret_red,isFind,[0,0,0,0,0,section(k,6)]];
                         else
                             fprintf('\tFitting...\r');
-                            [~,ang_gof]=fit([range(section(k,1):section(k,2))]',[ang(section(k,1):section(k,2))]','poly1');
-                            [amp_cfit,amp_gof]=fit([range(section(k,1):section(k,2))]',[amplitude(section(k,1):section(k,2))]','poly1');
-                            section(k,3)=ang_gof.adjrsquare;
-                            section(k,4)=amp_cfit.p1;
-                            section(k,5)=amp_gof.adjrsquare;
+                            gpu_range = gpuArray(range(section(k,1):section(k,2)));
+                            gpu_ang = gpuArray(ang(section(k,1):section(k,2)));
+                            gpu_amp = gpuArray(amplitude(section(k,1):section(k,2)));
+                            
+                            [p_ang,S_ang]= polyfit(gpu_range,gpu_ang,1);
+                            [p_amp,S_amp]= polyfit(gpu_range,gpu_amp,1);
+%                             [~,ang_gof]=fit([range(section(k,1):section(k,2))]',[ang(section(k,1):section(k,2))]','poly1');
+%                             [amp_cfit,amp_gof]=fit([range(section(k,1):section(k,2))]',[amplitude(section(k,1):section(k,2))]','poly1');
+%                             1 - (S.normr/norm(y - mean(y)))^2
+                            section(k,3)=1 - (S_ang.normr/norm(gpu_ang - mean(gpu_ang)))^2;
+                            section(k,4)=p_amp(1);
+                            section(k,5)=1 - (S_amp.normr/norm(gpu_amp - mean(gpu_amp)))^2;
                             %                         section(k,6)=mean(amplitude(section(k,1):section(k,2)));
                             section=section(section(:,3)>0.9 & section(:,5)>0.9 & abs(section(:,4))<0.2,:);
                             if ~isempty(section)
